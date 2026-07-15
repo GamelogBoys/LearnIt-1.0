@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Authentication</title>
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <link rel="stylesheet" href="css/a90674.css">
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen flex items-center justify-center p-4">
+
+  <% if (error && error.length > 0) { %>
+    <div id="toast-notification" class="toast">
+        <div class="toast-content">
+            <span class="toast-icon">⚠️</span>
+            <span class="toast-message"><%= error %></span>
+        </div>
+        <!-- This div creates the timing line visual -->
+        <div class="toast-progress"></div>
+    </div>
+<% } %>
+
+
+  <div class="bg-white rounded-2xl shadow-xl flex flex-col md:flex-row w-full max-w-4xl overflow-hidden min-h-[600px]">
+    
+    <!-- Left Column: Visual Banner -->
+    <div class="md:w-1/2 bg-blue-600 p-8 text-white flex flex-col justify-between relative overflow-hidden">
+      <div class="absolute inset-0 bg-gradient-to-br from-blue-500 to-indigo-700 opacity-90"></div>
+      
+      <!-- Top Decorative Element -->
+      <div class="relative z-10">
+        <div class="h-10 w-10 rounded-xl bg-white/20 flex items-center justify-center backdrop-blur-md font-bold text-xl">
+          <img src="/favicon.ico" alt="❖">
+        </div>
+      </div>
+
+      <!-- Core Banner Text -->
+      <div class="relative z-10 my-auto py-12 md:py-0">
+        <h1 class="text-3xl font-extrabold tracking-tight mb-4">
+          Welcome to Our Community
+        </h1>
+        <p class="text-blue-100 text-sm leading-relaxed max-w-sm">
+          Access your personalized dashboard, manage your projects, and connect with thousands of professionals worldwide.
+        </p>
+      </div>
+
+      <!-- Bottom Footer Info -->
+      <div class="relative z-10 text-xs text-blue-200 hidden md:block">
+        &copy; 2026 Platform Inc. All rights reserved.
+      </div>
+    </div>
+
+    <!-- Right Column: Authentication Forms Container -->
+    <div class="md:w-1/2 p-8 flex flex-col justify-center bg-white">
+      
+      <!-- ================= LOGIN FORM ================= -->
+      <div id="login-interface" class="space-y-6">
+        <div>
+          <h2 class="text-2xl font-bold tracking-tight text-slate-900">Sign in to account</h2>
+          <p class="text-sm text-slate-500 mt-1">Enter your credentials to access your portal</p>
+        </div>
+
+        <form action="/auth/login" method="POST" class="space-y-4">
+          <div>
+            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1.5">Email Address</label>
+            <input type="email" name="email" required placeholder="name@company.com" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-blue-500 focus:bg-white transition-colors">
+          </div>
+
+          <div>
+            <div class="flex justify-between items-center mb-1.5">
+              <label class="block text-xs font-semibold uppercase tracking-wider text-slate-600">Password</label>
+              <a href="#" class="text-xs text-blue-600 hover:underline font-medium">Forgot password?</a>
+            </div>
+            <input type="password" name="password" required placeholder="••••••••" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-blue-500 focus:bg-white transition-colors">
+          </div>
+
+          <div class="flex items-center">
+            <input type="checkbox" name="login_remember" id="remember" class="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500">
+            <label for="remember" class="ml-2 text-sm text-slate-600 select-none">Keep me logged in</label>
+          </div>
+
+          <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm py-2.5 px-4 rounded-lg transition-colors cursor-pointer shadow-sm">
+            Sign In
+          </button>
+        </form>
+
+        <div class="text-center pt-2">
+          <p class="text-sm text-slate-600">
+            Don't have an account? 
+            <button onclick="toggleAuth(true)" class="text-blue-600 font-semibold hover:underline cursor-pointer">Create one</button>
+          </p>
+        </div>
+      </div>
+
+      <!-- ================= REGISTER FORM ================= -->
+      <div id="register-interface" class="space-y-6 hidden">
+        <div>
+          <h2 class="text-2xl font-bold tracking-tight text-slate-900">Create your account</h2>
+          <p class="text-sm text-slate-500 mt-1">Get started by filling out your information</p>
+        </div>
+
+        <form action="/auth/register" method="POST" class="space-y-4">
+          <div>
+            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1.5">Full Name</label>
+            <input type="text" name="fullname" required placeholder="John Doe" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-blue-500 focus:bg-white transition-colors">
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1.5">Email Address</label>
+            <input type="email" name="email" required placeholder="name@company.com" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-blue-500 focus:bg-white transition-colors">
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1.5">Password</label>
+            <input type="password" name="password" required placeholder="••••••••" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-blue-500 focus:bg-white transition-colors">
+          </div>
+
+          <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm py-2.5 px-4 rounded-lg transition-colors cursor-pointer shadow-sm pt-2">
+            Create Account
+          </button>
+        </form>
+
+        <div class="text-center pt-2">
+          <p class="text-sm text-slate-600">
+            Already have an account? 
+            <button onclick="toggleAuth(false)" class="text-blue-600 font-semibold hover:underline cursor-pointer">Sign in</button>
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Style patch for cleaner cross-browser dropdown select indicators -->
+  <style>
+    .unique-select-icon {
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://w3.org' viewBox='0 0 24 24' fill='none' stroke='%23475569' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right 0.75rem center;
+      background-size: 1em;
+      padding-right: 2.5rem;
+    }
+  </style>
+
+  <!-- Interactive script to toggle view state -->
+  <script src="js/auth-a609.js"></script>
+</body>
+</html>

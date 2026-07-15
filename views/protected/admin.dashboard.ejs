@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LearnIt - Admin Management Panel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/css/a90674.css">
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans min-h-screen flex flex-col justify-between">
+
+    <% if (error && error.length > 0) { %>
+        <div id="toast-notification" class="toast fixed top-5 right-5 z-50 bg-white border-l-4 border-red-500 text-gray-900 px-4 py-3 rounded-lg shadow-xl flex flex-col min-w-[300px] border border-gray-200">
+            <div class="toast-content flex items-center gap-3">
+                <span class="toast-icon text-xl">⚠️</span>
+                <span class="toast-message text-sm font-semibold"><%= error %></span>
+            </div>
+            <div class="toast-progress h-1 bg-red-500 mt-2 rounded-full w-full"></div>
+        </div>
+    <% } %>
+
+    <header class="border-b border-gray-200 bg-white shadow-sm">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-2 font-bold text-xl tracking-wider text-red-600">
+                <span>🛡️</span> LearnIt Admin
+            </div>
+            <div class="text-sm font-semibold text-gray-500">
+                Signed In: <span class="text-gray-800"><%= (locals.owner && owner.fullname) ? owner.fullname : 'Administrator' %></span>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow flex items-center justify-center px-4 py-12">
+        <div class="w-full max-w-lg bg-white border border-gray-200 rounded-2xl shadow-xl p-8 space-y-6">
+            <div class="text-center">
+                <h1 class="text-2xl font-extrabold text-gray-900 tracking-tight">Upload Cohort Video</h1>
+                <p class="text-sm text-gray-500 mt-1">Populate platform course indices across student dashboards.</p>
+            </div>
+
+            <form action="/admin/upload" method="POST" enctype="multipart/form-data" class="space-y-5">
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-gray-600 mb-2">Video Title</label>
+                    <input 
+                        type="text" 
+                        name="title" 
+                        required
+                        class="w-full bg-gray-50 border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-red-500 focus:bg-white transition"
+                        placeholder="e.g., Advanced CSS Grid Masterclass"
+                    >
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-gray-600 mb-2">Cohort Focus Area Tag</label>
+                    <div class="relative">
+                        <select 
+                            name="tag" 
+                            required
+                            class="w-full bg-gray-50 border border-gray-300 rounded-xl px-4 py-3 text-sm appearance-none focus:outline-none focus:border-red-500 focus:bg-white transition cursor-pointer"
+                        >
+                            <option value="Frontend">Frontend</option>
+                            <option value="Backend">Backend</option>
+                            <option value="DevOps">DevOps</option>
+                            <option value="UI/UX">UI/UX</option>
+                        </select>
+                        <div class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-gray-400">▼</div>
+                    </div>
+                </div>
+
+                <div>
+    <label class="block text-xs font-bold uppercase tracking-wider text-gray-600 mb-2">Thumbnail Upload (Image)</label>
+    <label class="flex flex-col items-center justify-center w-full h-24 border-2 border-gray-300 border-dashed rounded-xl cursor-pointer bg-gray-50 hover:bg-gray-100 transition">
+        <div class="flex flex-col items-center justify-center pt-3 pb-3">
+            <span class="text-xl mb-1">🖼️</span>
+            <p class="text-xs text-gray-500 font-medium">Select thumbnail image</p>
+        </div>
+        <input type="file" name="thumbnail" accept="image/*" required class="hidden" />
+    </label>
+</div>
+
+<div>
+    <label class="block text-xs font-bold uppercase tracking-wider text-gray-600 mb-2">Cohort Video File (MP4/WebM)</label>
+    <label class="flex flex-col items-center justify-center w-full h-24 border-2 border-gray-300 border-dashed rounded-xl cursor-pointer bg-gray-50 hover:bg-gray-100 transition">
+        <div class="flex flex-col items-center justify-center pt-3 pb-3">
+            <span class="text-xl mb-1">🎬</span>
+            <p class="text-xs text-gray-500 font-medium">Select video file</p>
+        </div>
+        <input type="file" name="videoFile" accept="video/*" required class="hidden" />
+    </label>
+</div>
+
+                <button 
+                    type="submit"
+                    class="w-full bg-red-600 text-white font-bold text-sm py-3.5 rounded-xl transition shadow-md hover:bg-red-700 active:scale-[0.99]"
+                >
+                    Publish to Cohort Feed
+                </button>
+            </form>
+        </div>
+    </main>
+
+    <script>
+        const toast = document.getElementById('toast-notification');
+        if (toast) {
+            setTimeout(() => {
+                toast.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(120%)';
+                setTimeout(() => toast.remove(), 500);
+            }, 4000);
+        }
+    </script>
+</body>
+</html>

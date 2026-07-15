@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LearnIt - Cohort Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="css/a90674.css">
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans min-h-screen">
+
+    <% if (error && error.length > 0) { %>
+        <div id="toast-notification" class="toast fixed top-5 right-5 z-50 bg-white border-l-4 border-red-500 text-gray-900 px-4 py-3 rounded-lg shadow-xl flex flex-col min-w-[300px] transition-all duration-500 border border-gray-200">
+            <div class="toast-content flex items-center gap-3">
+                <span class="toast-icon text-xl">⚠️</span>
+                <span class="toast-message text-sm font-semibold"><%= error %></span>
+            </div>
+            <div class="toast-progress h-1 bg-red-500 mt-2 rounded-full w-full"></div>
+        </div>
+    <% } %>
+
+    <header class="border-b border-gray-200 bg-white/80 backdrop-blur sticky top-0 z-40 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-2 font-bold text-xl tracking-wider text-blue-600">
+                <span>⚡</span> LearnIt Portal
+            </div>
+            
+            <div class="w-full max-w-md mx-4">
+                <div class="relative">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400">🔍</span>
+                    <input 
+                        type="search" 
+                        id="video-search"
+                        value="<%= searchQuery %>"
+                        class="w-full bg-gray-100 text-sm text-gray-800 placeholder-gray-500 rounded-full pl-10 pr-4 py-2 border border-gray-300 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:bg-white transition" 
+                        placeholder="Search cohort resources by title..."
+                    >
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-3 cursor-pointer" onclick="window.location.href='/cohort/settings'">
+    <span class="text-sm font-medium text-gray-600 hidden sm:inline"><%= user.fullname %></span>
+    <div class="w-10 h-10 rounded-full overflow-hidden border border-gray-200 bg-gray-100 flex items-center justify-center">
+        <% if (user.image) { %>
+            <img src="<%= user.image %>" alt="DP" class="w-full h-full object-cover">
+        <% } else { %>
+            <div class="w-full h-full bg-blue-600 text-white flex items-center justify-center font-bold text-sm">
+                <%= user.fullname.charAt(0).toUpperCase() %>
+            </div>
+        <% } %>
+    </div>
+</div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        <div class="flex flex-col items-center text-center gap-4 pb-6 border-b border-gray-200 mb-8">
+            <div>
+                <h1 class="text-3xl font-extrabold tracking-tight text-gray-900">Your Cohort Dashboard</h1>
+                <p class="text-sm text-gray-500 mt-1">Select topics or filter keywords below to begin viewing tracks.</p>
+            </div>
+            
+            <div class="flex flex-wrap justify-center gap-2 mt-2" id="filter-bar">
+                <% ['all', 'Frontend', 'Backend', 'DevOps', 'UI/UX'].forEach(tag => { %>
+                    <button 
+                        class="filter-btn px-5 py-2 rounded-full text-xs font-semibold transition tracking-wide shadow-sm border 
+                        <%= currentTag === tag ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-600 border-gray-300 hover:bg-gray-50 hover:text-gray-900' %>" 
+                        data-category="<%= tag %>">
+                        <%= tag === 'all' ? 'All Content' : tag %>
+                    </button>
+                <% }) %>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <% if (videos && videos.length > 0) { %>
+                <% videos.forEach(video => { %>
+                    <div onclick="playVideo('<%= video._id %>')" class="group flex flex-col justify-between bg-white rounded-2xl overflow-hidden border border-gray-200 shadow-sm hover:shadow-xl hover:scale-[1.01] transition duration-300 cursor-pointer">
+                        <div>
+                            <div class="relative aspect-video bg-gray-100 overflow-hidden">
+                                <img src="<%= video.thumbnail %>" alt="Thumbnail" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+                            </div>
+                            <div class="p-5">
+                                <span class="inline-block px-2.5 py-0.5 bg-blue-50 text-blue-600 rounded text-[11px] font-bold uppercase tracking-wider mb-2">
+                                    <%= video.tag %>
+                                </span>
+                                <h3 class="font-bold text-base text-gray-800 line-clamp-2 leading-snug group-hover:text-blue-600 transition">
+                                    <%= video.title %>
+                                </h3>
+                            </div>
+                        </div>
+                        <div class="p-5 pt-0 text-xs font-medium text-gray-400 flex items-center gap-2 border-t border-gray-50 mt-4 pt-3">
+                            <span>👁️ <%= video.views.length %> views</span>•
+                            <span>📅 <%= new Date(video.createdAt).toLocaleDateString(undefined, {month: 'short', day: 'numeric'}) %></span>
+                        </div>
+                    </div>
+                <% }) %>
+            <% } else { %>
+                <div class="col-span-full text-center py-20 bg-white rounded-2xl border border-gray-200 shadow-sm">
+                    <span class="text-5xl">📭</span>
+                    <p class="mt-4 text-gray-500 text-lg font-medium">No cohort streaming video assets matched those filters.</p>
+                </div>
+            <% } %>
+        </div>
+    </main>
+
+    <script>
+        // Automatic Fade Dismissal Logic mapping your custom client asset configurations
+        const toast = document.getElementById('toast-notification');
+        if (toast) {
+            setTimeout(() => {
+                toast.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(120%)';
+                setTimeout(() => toast.remove(), 500);
+            }, 4000);
+        }
+
+        const searchInput = document.getElementById('video-search');
+        const filterButtons = document.querySelectorAll('.filter-btn');
+
+        // Dynamic State URL Builder
+        function triggerUpdate(selectedTag, searchVal) {
+            window.location.href = `/cohort?tag=${encodeURIComponent(selectedTag)}&search=${encodeURIComponent(searchVal)}`;
+        }
+
+        // Live Debounced Keypress Input Event
+        let debounceTimer;
+        searchInput.addEventListener('input', (e) => {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => {
+                const activeTag = document.querySelector('.filter-btn.bg-blue-600').getAttribute('data-category');
+                triggerUpdate(activeTag, e.target.value);
+            }, 500);
+        });
+
+        // Pill Button Clicks
+        filterButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const category = btn.getAttribute('data-category');
+                triggerUpdate(category, searchInput.value);
+            });
+        });
+
+        // Async Background Tracking Post Request Endpoint Execution
+        async function playVideo(videoId) {
+    try {
+        // Log view asynchronously in the background
+        await fetch(`/cohort/video/${videoId}/view`, { method: 'POST' });
+        
+        // Redirect directly to the watch page
+        window.location.href = `/cohort/watch/${videoId}`;
+    } catch (err) {
+        console.error("Metrics pipeline update error:", err);
+        // Fallback redirection anyway if background analytics fail
+        window.location.href = `/cohort/watch/${videoId}`;
+    }
+}
+    </script>
+</body>
+</html>

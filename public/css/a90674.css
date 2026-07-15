@@ -1,0 +1,49 @@
+.toast {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: #ff4d4d;
+    color: white;
+    padding: 16px;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    font-family: sans-serif;
+    z-index: 1000;
+    overflow: hidden;
+    min-width: 250px;
+    animation: slideIn 0.3s ease-out forwards;
+}
+
+.toast-content {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.toast-message {
+    font-weight: 500;
+}
+
+/* The horizontal progress indicator bar */
+.toast-progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 4px;
+    background-color: rgba(255, 255, 255, 0.7);
+    width: 100%;
+    /* 4s matches the JavaScript dismissal timer */
+    animation: shrinkWidth 4s linear forwards; 
+}
+
+/* Animations */
+@keyframes slideIn {
+    from { transform: translateX(120%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes shrinkWidth {
+    from { width: 100%; }
+    to { width: 0%; }
+}
