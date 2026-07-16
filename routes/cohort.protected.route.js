@@ -216,7 +216,7 @@ router.get('/settings', isLoggedIn, (req, res) => {
 });
 
 // 2. Update Profile Info Route (Name & Profile Picture)
-router.post('/settings/update-profile', isLoggedIn, uploadDp.single('image'), async (req, res) => {
+router.post('/settings/update-profile', isLoggedIn, upload.single('image'), async (req, res) => {
     try {
         const { fullname } = req.body;
         const updateData = { fullname };
