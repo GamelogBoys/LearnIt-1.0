@@ -6,6 +6,26 @@
     <title>LearnIt - Watching: <%= video.title %></title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="/css/a90674.css">
+    <meta name="description" content="Watch <%= video.title %> on LearnIt Cohort Hub under the <%= video.tag %> track.">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "VideoObject",
+      "name": "<%= video.title %>",
+      "description": "Educational cohort learning resource for <%= video.title %> categorized under <%= video.tag %>.",
+      "thumbnailUrl": [
+        "<%= baseUrl %>/cohort/file/<%= video.thumbnail %>"
+      ],
+      "uploadDate": "<%= new Date(video.createdAt).toISOString() %>",
+      "contentUrl": "<%= baseUrl %>/cohort/file/<%= video.videoPath %>",
+      "embedUrl": "<%= baseUrl %>/cohort/watch/<%= video._id %>",
+      "interactionStatistic": {
+        "@type": "InteractionCounter",
+        "interactionType": { "@type": "LikeAction" },
+        "userInteractionCount": <%= video.likes ? video.likes.length : 0 %>
+      }
+    }
+    </script>
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans min-h-screen">
 

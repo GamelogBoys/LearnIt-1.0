@@ -3,6 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="index, follow"> <meta name="googlebot" content="index, follow">
+    
+    <meta name="description" content="Access the <%= video.title %> cohort workspace. Learn <%= video.tag %> step-by-step with interactive labs, high-quality streams, and collaborative peer modules.">
+    
+    <link rel="canonical" href="<%= baseUrl %>/cohort/watch/<%= video._id %>">
+    
+    <meta property="og:type" content="video.other">
+    <meta property="og:site_name" content="LearnIt">
+    <meta property="og:url" content="<%= baseUrl %>/cohort/watch/<%= video._id %>">
+    <meta property="og:title" content="<%= video.title %> | LearnIt Cohort">
+    <meta property="og:description" content="Watch the <%= video.title %> masterclass on LearnIt. Join the cohort, review peer progress, and level up your skills.">
+    <meta property="og:image" content="<%= baseUrl %>/cohort/file/<%= video.thumbnail %>">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="<%= video.title %> | LearnIt Cohort">
+    <meta name="twitter:description" content="Join our study tracks and stream '<%= video.title %>' directly from the database sandbox interface.">
+    <meta name="twitter:image" content="<%= baseUrl %>/cohort/file/<%= video.thumbnail %>">
+
+    <meta name="theme-color" content="#4F46E5">
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">

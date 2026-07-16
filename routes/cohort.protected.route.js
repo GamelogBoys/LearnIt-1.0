@@ -24,6 +24,7 @@ router.get('/file/:filename', async (req, res) => {
         if (!files || files.length === 0) {
             return res.status(404).json({ error: 'File completely missing from GridFS arrays.' });
         }
+        
 
         const file = files[0];
 
@@ -42,6 +43,30 @@ router.get('/file/:filename', async (req, res) => {
             console.error("Stream pipe broke mid-flight:", err.message);
             res.sendStatus(500);
         });
+        if (range && file.contentType.includes('video')) {
+            const parts = range.replace(/bytes=/, "").split("-");
+            const start = parseInt(parts[0], 10);
+            const end = parts[1] ? parseInt(parts[1], 10) : file.length - 1;
+            const chunksize = (end - start) + 1;
+
+            res.writeHead(206, {
+                'Content-Range': `bytes ${start}-${end}/${file.length}`,
+                'Accept-Ranges': 'bytes',
+                'Content-Length': chunksize,
+                'Content-Type': file.contentType
+            });
+
+            const downloadStream = bucket.openDownloadStreamByName(req.params.filename, { start, end: end + 1 });
+            downloadStream.pipe(res);
+        }else {
+            // Standard Full Asset Stream for Images/Thumbnails
+            res.set('Content-Type', file.contentType || 'application/octet-stream');
+            res.set('Accept-Ranges', 'bytes');
+            res.set('Content-Length', file.length);
+            
+            const downloadStream = bucket.openDownloadStreamByName(req.params.filename);
+            downloadStream.pipe(res);
+        }
 
     } catch (err) {
         console.error("GridFS Retrieval Stream Broken:", err.message);
@@ -102,6 +127,9 @@ router.get('/watch/:id', isLoggedIn, async (req, res) => {
             req.flash('error', 'Video asset not found.');
             return res.redirect('/cohort');
         }
+        const protocol = req.protocol;
+        const host = req.get('host');
+        const baseUrl = `${protocol}://${host}`;
 
         // Fetch up to 6 other videos for the sidebar recommendations (excluding the current one)
         const suggestions = await videoModel.find({ _id: { $ne: currentVideo._id } }).limit(6);
@@ -109,7 +137,8 @@ router.get('/watch/:id', isLoggedIn, async (req, res) => {
         res.render("protected/watch.ejs", {
             video: currentVideo,
             suggestions,
-            user: req.user
+            user: req.user,
+            baseUrl
         });
     } catch (err) {
         console.error(err.message);
