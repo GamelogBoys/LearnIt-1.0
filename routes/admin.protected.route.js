@@ -46,40 +46,30 @@ const uploadToGridFS = (buffer, originalname, fieldname) => {
 };
 
 // 2. POST Route using pure memory storage + manual streaming hooks
-router.post('/upload', isAdmin, upload.fields([
+router.post('/upload', upload.fields([
     { name: 'thumbnail', maxCount: 1 },
     { name: 'videoFile', maxCount: 1 }
 ]), async (req, res) => {
     try {
-        const { title, tag } = req.body;
-        
         if (!req.files || !req.files.thumbnail || !req.files.videoFile) {
-            req.flash('error', 'Please upload both a thumbnail image and a video file.');
-            return res.redirect('/admin/dashboard');
+            return res.status(400).send('Missing files.');
         }
 
-        // Get file data out of memory storage buffers
-        const thumbnailFile = req.files.thumbnail[0];
-        const videoFile = req.files.videoFile[0];
+        // Process buffers sequentially safely!
+        const thumbnailFilename = await uploadToGridFS(req.files.thumbnail[0].buffer, req.files.thumbnail[0].originalname, 'thumbnail');
+        const videoFilename = await uploadToGridFS(req.files.videoFile[0].buffer, req.files.videoFile[0].originalname, 'videoFile');
 
-        // Pipe both files safely using native promises (No out-of-order crashes!)
-        const thumbnailFilename = await uploadToGridFS(thumbnailFile.buffer, thumbnailFile.originalname, 'thumbnail');
-        const videoFilename = await uploadToGridFS(videoFile.buffer, videoFile.originalname, 'videoFile');
-
-        // Create metadata document mapping strings into MongoDB collection
         await videoModel.create({
-            title,
-            tag,
+            title: req.body.title,
+            tag: req.body.tag,
             thumbnail: thumbnailFilename,
             videoPath: videoFilename
         });
 
-        req.flash('success', 'Cohort media assets securely compiled to GridFS database arrays!');
         res.redirect('/cohort');
     } catch (err) {
-        console.error("Manual GridFS Streaming Block Error:", err.message);
-        req.flash('error', 'Failed to publish video asset.');
-        res.redirect('/admin/dashboard');
+        console.error(err);
+        res.status(500).send('Upload failed.');
     }
 });
 

@@ -170,6 +170,12 @@ router.post('/video/:id/like', isLoggedIn, async (req, res) => {
     }
 });
 
+const storage = multer.memoryStorage();
+const upload = multer({ 
+    storage: storage,
+    limits: { fileSize: 150 * 1024 * 1024 } // 150MB Cap
+});
+
 const mongoStorage = new GridFsStorage({
     url: process.env.MONGO_URI, // 👈 Uses your main database connection URL
     options: { useNewUrlParser: true, useUnifiedTopology: true },
@@ -187,8 +193,22 @@ const mongoStorage = new GridFsStorage({
         });
     }
 });
-    
-const uploadDp = multer({ storage: mongoStorage });
+
+const uploadToGridFS = (buffer, originalname, fieldname) => {
+    return new Promise((resolve, reject) => {
+        const db = mongoose.connection.db;
+        const bucket = new mongoose.mongo.GridFSBucket(db, { bucketName: 'uploads' });
+
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        const filename = `${fieldname}-${uniqueSuffix}${path.extname(originalname)}`;
+
+        const uploadStream = bucket.openUploadStream(filename);
+        uploadStream.end(buffer);
+
+        uploadStream.on('finish', () => resolve(filename));
+        uploadStream.on('error', (err) => reject(err));
+    });
+};
 
 // 1. Render Settings View Layout
 router.get('/settings', isLoggedIn, (req, res) => {
